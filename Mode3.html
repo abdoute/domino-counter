@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mode 3 - Domino Counter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Modal to choose player names + target -->
+   <div id="setupModal" class="modal">
+  <div class="modal-content card">
+    <h2 class="title">⚡ Setup Match ⚡</h2>
+    
+    <div class="field">
+      <label for="player1Name">Player 1 Name</label>
+      <input type="text" id="player1Name" value="Player 1">
+    </div>
+
+    <div class="field">
+      <label for="player2Name">Player 2 Name</label>
+      <input type="text" id="player2Name" value="Player 2">
+    </div>
+
+    <div class="field">
+      <label for="player3Name">Player 3 Name</label>
+      <input type="text" id="player3Name" value="Player 3">
+    </div>
+
+    <div class="field">
+      <label for="targetPoints">Target Points</label>
+      <input type="number" id="targetPoints" value="50">
+    </div>
+
+    <button id="startMatch" class="btn-primary">🚀 Start Match</button>
+  </div>
+</div>
+
+
+
+
+  <!-- Main game layout -->
+  <div class="container hidden" id="gameContainer">
+    <h1>Mode 3: Three Players</h1>
+    <h3 id="targetDisplay"></h3>
+
+    <div class="teams">
+      <!-- Player 1 -->
+      <div class="team">
+        <h2 id="player1Title">Player 1</h2>
+        <div class="controls">
+          <div class="quick-buttons">
+            <button onclick="addPoints(1, 1)">+1</button>
+            <button onclick="addPoints(1, -1)">-1</button>
+          </div>
+        </div>
+        <div class="history" id="player1History"></div>
+        <div class="total">Total: <span id="player1Total">0</span></div>
+      </div>
+
+      <!-- Player 2 -->
+      <div class="team">
+        <h2 id="player2Title">Player 2</h2>
+        <div class="controls">
+          <div class="quick-buttons">
+            <button onclick="addPoints(2, 1)">+1</button>
+            <button onclick="addPoints(2, -1)">-1</button>
+          </div>
+        </div>
+        <div class="history" id="player2History"></div>
+        <div class="total">Total: <span id="player2Total">0</span></div>
+      </div>
+
+      <!-- Player 3 -->
+      <div class="team">
+        <h2 id="player3Title">Player 3</h2>
+        <div class="controls">
+          <div class="quick-buttons">
+            <button onclick="addPoints(3, 1)">+1</button>
+            <button onclick="addPoints(3, -1)">-1</button>
+          </div>
+        </div>
+        <div class="history" id="player3History"></div>
+        <div class="total">Total: <span id="player3Total">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Winner Modal -->
+  <div id="winnerModal" class="modal hidden">
+    <div class="modal-content celebration">
+      <h2 id="winnerMessage">🎉 Player Wins! 🎉</h2>
+      <p id="winnerPoints"></p>
+      <button onclick="goHome()">Back to Home</button>
+    </div>
+  </div>
+  
+
+  <script>
+    let target = null;
+    let scores = {1: 0, 2: 0, 3: 0};
+    let matchStarted = false;
+    let gameOver = false;
+
+    document.getElementById("startMatch").addEventListener("click", () => {
+      const p1 = document.getElementById("player1Name").value || "Player 1";
+      const p2 = document.getElementById("player2Name").value || "Player 2";
+      const p3 = document.getElementById("player3Name").value || "Player 3";
+      target = parseInt(document.getElementById("targetPoints").value) || 50;
+
+      document.getElementById("player1Title").textContent = p1;
+      document.getElementById("player2Title").textContent = p2;
+      document.getElementById("player3Title").textContent = p3;
+      document.getElementById("targetDisplay").textContent = "Target: " + target + " points";
+
+      document.getElementById("setupModal").style.display = "none";
+      document.getElementById("gameContainer").classList.remove("hidden");
+
+      matchStarted = true;
+      gameOver = false;
+    });
+
+    function addPoints(player, points) {
+      if (!matchStarted || gameOver) return;
+      scores[player] += points;
+      document.getElementById(`player${player}History`).innerHTML += `<span>${points > 0 ? '+' : ''}${points}</span> `;
+      document.getElementById(`player${player}Total`).textContent = scores[player];
+      checkWinner(player);
+    }
+
+    function checkWinner(player) {
+      if (target && scores[player] >= target) {
+        const winnerName = document.getElementById(`player${player}Title`).textContent;
+        document.getElementById("winnerMessage").textContent = "🎉 " + winnerName + " Wins! 🎉";
+        document.getElementById("winnerPoints").textContent = "Final Score: " + scores[player];
+        document.getElementById("winnerModal").classList.remove("hidden");
+        gameOver = true;
+      }
+    }
+
+    function goHome() {
+      window.location.href = "index.html"; 
+    }
+  </script>
+
+  <style>
+    /* Modal overlay */
+.modal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.modal-content {
+  background: linear-gradient(180deg, var(--card), var(--bg-soft));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  width: 350px;
+  text-align: center;
+  animation: popIn 0.4s ease;
+}
+
+.modal-content .title {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+/* الحقول */
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: var(--muted);
+}
+
+.field input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+/* زر البداية */
+#startMatch {
+  background: var(--accent);
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.3s ease;
+}
+
+#startMatch:hover {
+  background: var(--accent-2);
+  transform: translateY(-2px);
+}
+
+/* Animation */
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+    .hidden { display: none; }
+    .teams { display: flex; flex-direction: column; gap: 40px; justify-content: center; margin-top: 20px; }
+    .team { background: var(--card, #f4f4f4); padding: 20px; border-radius: 12px; box-shadow: var(--shadow, 0 2px 6px rgba(0,0,0,.2)); }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+    .quick-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+    .controls button { padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 8px; border: 1px solid #ccc; }
+    .history { margin-top: 10px; font-family: monospace; min-height: 24px; }
+    .total { margin-top: 10px; font-weight: bold; font-size: 22px; }
+    .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
+    .modal-content { background:white; padding:30px; border-radius:12px; text-align:center; animation: popIn 0.5s ease; }
+    .celebration { background: linear-gradient(135deg,#ff9a9e,#fad0c4); box-shadow: 0 0 20px rgba(0,0,0,0.4); }
+    .celebration h2 { font-size: 28px; }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal.hidden { display: none !important; }
+
+
+
+
+     .hidden { display: none; }
+    .team { background: var(--card, #f4f4f4); padding: 20px; border-radius: 12px; box-shadow: var(--shadow, 0 2px 6px rgba(0,0,0,.2)); }
+    .controls {
+  display: flex;
+  flex-direction: row;   /* أفقيا */
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;       /* يخليهم يهبطو لسطر ثاني لو ضاق المكان */
+}
+.teams {
+  display: flex;
+  flex-direction: column; /* يخليهم عموديين */
+  gap: 40px;              /* المسافة بين Team1 و Team2 */
+  align-items: center;    /* يوسطهم في الصفحة */
+  margin-top: 20px;
+}
+
+.total {
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 24px;   /* تكبير النص */
+  color: var(--accent); /* يخليه مميز */
+}
+
+    .controls button, .controls input { padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 8px; border: 1px solid #ccc; }
+    .history { margin-top: 10px; font-family: monospace; min-height: 24px; }
+    .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
+    .modal-content { background:white; padding:30px; border-radius:12px; text-align:center; animation: popIn 0.5s ease; }
+    .celebration { background: linear-gradient(135deg,#ff9a9e,#fad0c4); box-shadow: 0 0 20px rgba(0,0,0,0.4); }
+    .celebration h2 { font-size: 28px; }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal.hidden {
+  display: none !important;
+}
+/* Modal overlay */
+.modal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+/* محتوى المودال */
+.modal-content {
+  background: linear-gradient(180deg, var(--card), var(--bg-soft));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  width: 350px;
+  text-align: center;
+  animation: popIn 0.4s ease;
+}
+
+.modal-content .title {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+/* الحقول */
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: var(--muted);
+}
+
+.field input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+/* زر البداية */
+#startMatch {
+  background: var(--accent);
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.3s ease;
+}
+
+#startMatch:hover {
+  background: var(--accent-2);
+  transform: translateY(-2px);
+}
+
+/* Animation */
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+/* تحسين ستايل الخانة */
+.controls input {
+  width: 280px;
+  padding: 10px;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: var(--bg-soft);
+  color: var(--text);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.controls input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--ring);
+}
+.controls {
+  display: flex;
+  flex-direction: column;  /* نخلي العناصر عموديين */
+  gap: 10px;
+  align-items: center;     /* يوسّطهم */
+}
+
+.controls .quick-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;               /* مسافة بين +2 و -2 */
+}
+  </style>
+
+</body>
+</html>

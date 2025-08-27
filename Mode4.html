@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mode 4 - Domino Counter</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      background: radial-gradient(1200px 800px at 80% -10%, #1b2143 0%, transparent 60%),
+                  radial-gradient(1200px 800px at 10% 110%, #0b654f 0%, transparent 60%),
+                  var(--bg);
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: var(--accent);
+      font-size: 2rem;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .teams {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .team {
+      background: var(--card);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .controls .quick-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    .controls input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--ring);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      background: var(--bg-soft);
+      color: var(--text);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .controls input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--ring);
+    }
+
+    .total {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .history {
+      margin-top: 8px;
+      font-family: monospace;
+      min-height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mode 4: Two Players — 1 vs 1</h1>
+
+  <div class="teams">
+    <!-- Player 1 -->
+    <div class="team">
+      <h2 id="team1Title">Player 1</h2>
+      <div class="controls">
+        <div class="quick-buttons">
+          <button onclick="addPoints(1,2)">+2</button>
+          <button onclick="addPoints(1,-2)">-2</button>
+        </div>
+        <input type="number" id="team1Input" placeholder="Enter points">
+        <button onclick="addCustomPoints(1)">Add</button>
+      </div>
+      <div class="history" id="team1History"></div>
+      <div class="total" id="team1Total">0</div>
+    </div>
+
+    <!-- Player 2 -->
+    <div class="team">
+      <h2 id="team2Title">Player 2</h2>
+      <div class="controls">
+        <div class="quick-buttons">
+          <button onclick="addPoints(2,2)">+2</button>
+          <button onclick="addPoints(2,-2)">-2</button>
+        </div>
+        <input type="number" id="team2Input" placeholder="Enter points">
+        <button onclick="addCustomPoints(2)">Add</button>
+      </div>
+      <div class="history" id="team2History"></div>
+      <div class="total" id="team2Total">0</div>
+    </div>
+  </div>
+
+  <script>
+    let scores = {1:0, 2:0};
+
+    function addPoints(player, points){
+      scores[player] += points;
+      document.getElementById(`team${player}History`).innerHTML += `<span>${points>0?'+':''}${points}</span> `;
+      document.getElementById(`team${player}Total`).textContent = scores[player];
+    }
+
+    function addCustomPoints(player){
+      const input = document.getElementById(`team${player}Input`);
+      const value = parseInt(input.value);
+      if(!isNaN(value)){
+        addPoints(player, value);
+        input.value = "";
+      }
+    }
+
+    // دعم Enter لكل لاعب
+    ["team1Input","team2Input"].forEach((id,index)=>{
+      const inputEl = document.getElementById(id);
+      if(inputEl){
+        inputEl.addEventListener("keydown",(e)=>{
+          if(e.key === "Enter"){
+            addCustomPoints(index + 1);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

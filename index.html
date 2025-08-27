@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+ <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Domino Counter — Keep track of your domino games with multiple modes.">
+<meta name="author" content="Abdou">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Domino Counter">
+<meta property="og:description" content="Play domino and track scores easily with multiple game modes!">
+<meta property="og:type" content="website">
+<meta property="og:image" content="bg_domino.png"> <!-- صورة عندك في المشروع -->
+<meta property="og:url" content="https://www.facebook.com/abdou.temaini/">
+
+  <title>Domino Counter — Landing</title>
+  
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="shell">
+  <div class="card">
+
+    <!-- Topbar -->
+<div class="topbar">
+  <div class="brand" aria-label="Domino Counter">
+    <!-- لوجو خارجي بدل الدومينو اليدوي -->
+    <img src="bg_domino.png" alt="Domino Logo" class="logo" />
+    <strong>Domino Counter</strong>
+  </div>
+</div>
+
+      <div class="actions">
+        <button class="btn toggle" id="themeToggle" aria-pressed="false" aria-label="Toggle Theme">Toggle Theme</button>
+
+      </div>
+    </div>
+
+    <!-- Title Centered -->
+    <div class="title-wrap">
+      <div class="title-box" role="group" aria-label="App Title" style="text-align:center;">
+        <h1 class="title">Domino Counter Interface</h1>
+        <p class="subtitle">Choose a game mode to continue</p>
+      </div>
+    </div>
+
+    <!-- Modes -->
+    <section class="grid" aria-label="Game Modes">
+      <!-- Mode 1 -->
+      <article class="mode">
+        <div class="mode-info">
+          <span class="badge">Mode 1</span>
+          <div>
+            <h2 class="mode-title">Two Teams — Player 1 vs Player 2</h2>
+            <p class="mode-note">Classic duel between two players</p>
+          </div>
+        </div>
+        <button onclick="window.location.href='Mode1.html'">Start</button>
+      </article>
+
+      <!-- Mode 2 -->
+      <article class="mode">
+        <div class="mode-info">
+          <span class="badge">Mode 2</span>
+          <div>
+            <h2 class="mode-title">Four Players — Free for All</h2>
+            <p class="mode-note">Everyone plays against each other</p>
+          </div>
+        </div>
+        <button id="btnMode2" aria-label="Open Mode 2">Start</button>
+      </article>
+
+      <!-- Mode 3 -->
+      <article class="mode">
+        <div class="mode-info">
+          <span class="badge">Mode 3</span>
+          <div>
+            <h2 class="mode-title">Three Players</h2>
+            <p class="mode-note">Balanced three-way match</p>
+          </div>
+        </div>
+        <button id="btnMode3" aria-label="Open Mode 3">Start</button>
+      </article>
+
+      <!-- Mode 4 -->
+      <article class="mode">
+        <div class="mode-info">
+          <span class="badge">Mode 4</span>
+          <div>
+            <h2 class="mode-title">Two Players — 1 vs 1</h2>
+            <p class="mode-note">Fast and direct duel</p>
+          </div>
+        </div>
+        <button id="btnMode4" aria-label="Open Mode 4">Start</button>
+      </article>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="version">Domino Counter 2025</div>
+      <div class="links">
+        <a class="link" href="#" id="aboutLink">About</a>
+        <a class="link" href="#" id="helpLink">Help</a>
+      </div>
+    </footer>
+
+  </div>
+</div>
+<script src="script.js"></script>
+<script>
+
+
+</script>
+</body>
+</html>

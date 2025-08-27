@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mode 1 - Domino Counter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Modal to choose team names + target -->
+   <div id="setupModal" class="modal">
+  <div class="modal-content card">
+    <h2 class="title">⚡ Setup Match ⚡</h2>
+    
+    <div class="field">
+      <label for="team1Name">Team 1 Name</label>
+      <input type="text" id="team1Name" value="Team 1">
+    </div>
+
+    <div class="field">
+      <label for="team2Name">Team 2 Name</label>
+      <input type="text" id="team2Name" value="Team 2">
+    </div>
+
+    <div class="field">
+      <label for="targetPoints">Target Points</label>
+      <input type="number" id="targetPoints" value="50">
+    </div>
+
+    <button id="startMatch" class="btn-primary">🚀 Start Match</button>
+  </div>
+</div>
+
+
+  <!-- Main game layout -->
+  <div class="container hidden" id="gameContainer">
+    <h1>Mode 1: Two Teams</h1>
+    <h3 id="targetDisplay"></h3>
+
+    <div class="teams">
+      <!-- Team 1 -->
+      <div class="team">
+        <h2 id="team1Title">Team 1</h2>
+        <div class="controls">
+          <button onclick="addPoints(1, 2)">+2</button>
+          <button onclick="addPoints(1, -2)">-2</button>
+          <input type="number" id="team1Input" placeholder="Enter points">
+          <button onclick="addCustomPoints(1)">Add</button>
+        </div>
+        <div class="history" id="team1History"></div>
+        <div class="total">Total: <span id="team1Total">0</span></div>
+      </div>
+
+      <!-- Team 2 -->
+      <div class="team">
+        <h2 id="team2Title">Team 2</h2>
+        <div class="controls">
+          <button onclick="addPoints(2, 2)">+2</button>
+          <button onclick="addPoints(2, -2)">-2</button>
+          <input type="number" id="team2Input" placeholder="Enter points">
+          <button onclick="addCustomPoints(2)">Add</button>
+        </div>
+        <div class="history" id="team2History"></div>
+        <div class="total">Total: <span id="team2Total">0</span></div>
+      </div>
+    </div>
+  </div>
+<!-- Winner Modal -->
+  <div id="winnerModal" class="modal hidden">
+    <div class="modal-content celebration">
+      <h2 id="winnerMessage">🎉 Team Wins! 🎉</h2>
+      <p id="winnerPoints"></p>
+      <button onclick="goHome()">Back to Home</button>
+    </div>
+  </div>
+  
+
+  <script>
+      // دعم Enter لإضافة النقاط مباشرة لكل لاعب
+["team1Input","team2Input","team3Input","team4Input"].forEach((id,index)=>{
+  const inputEl = document.getElementById(id);
+  if(inputEl){
+    inputEl.addEventListener("keydown",(e)=>{
+      if(e.key === "Enter"){
+        addCustomPoints(index + 1);
+      }
+    });
+  }
+});
+    let target = null;
+let scores = {1: 0, 2: 0};
+let matchStarted = false; // ⬅️ جديد
+let gameOver = false;     // ⬅️ جديد
+
+document.getElementById("startMatch").addEventListener("click", () => {
+  const t1 = document.getElementById("team1Name").value || "Team 1";
+  const t2 = document.getElementById("team2Name").value || "Team 2";
+  target = parseInt(document.getElementById("targetPoints").value) || 50;
+
+  document.getElementById("team1Title").textContent = t1;
+  document.getElementById("team2Title").textContent = t2;
+  document.getElementById("targetDisplay").textContent = "Target: " + target + " points";
+
+  document.getElementById("setupModal").style.display = "none";
+  document.getElementById("gameContainer").classList.remove("hidden");
+
+  matchStarted = true;  // ⬅️ الماتش بدا
+  gameOver = false;
+});
+
+function addPoints(team, points) {
+  if (!matchStarted || gameOver) return; // ⬅️ ما يتنفّذش قبل الماتش أو بعد ما يربح فريق
+
+  scores[team] += points;
+  document.getElementById(`team${team}History`).innerHTML += `<span>${points > 0 ? '+' : ''}${points}</span> `;
+  document.getElementById(`team${team}Total`).textContent = scores[team];
+  checkWinner(team);
+}
+
+function addCustomPoints(team) {
+  if (!matchStarted || gameOver) return; // ⬅️ نفس الشرط
+  const input = document.getElementById(`team${team}Input`);
+  const value = parseInt(input.value);
+  if (!isNaN(value)) {
+    addPoints(team, value);
+    input.value = ""; // reset input
+  }
+}
+
+function checkWinner(team) {
+  if (target && scores[team] >= target) {
+    const winnerName = document.getElementById(`team${team}Title`).textContent;
+    document.getElementById("winnerMessage").textContent = "🎉 " + winnerName + " Wins! 🎉";
+    document.getElementById("winnerPoints").textContent = "Final Score: " + scores[team];
+    document.getElementById("winnerModal").classList.remove("hidden");
+    gameOver = true; // ⬅️ يمنع مواصلة اللعب
+  }
+}
+
+function goHome() {
+  window.location.href = "index.html"; // الصفحة الرئيسية
+}
+
+  // ⬇️⬇️ هنا زيد الكود تاع Enter
+  document.querySelectorAll("input[type='number']").forEach((input, index) => {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        addCustomPoints(index + 1);
+      }
+    });
+  })
+
+  </script>
+
+  <style>
+    .hidden { display: none; }
+    .team { background: var(--card, #f4f4f4); padding: 20px; border-radius: 12px; box-shadow: var(--shadow, 0 2px 6px rgba(0,0,0,.2)); }
+    .controls {
+  display: flex;
+  flex-direction: row;   /* أفقيا */
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;       /* يخليهم يهبطو لسطر ثاني لو ضاق المكان */
+}
+.teams {
+  display: flex;
+  flex-direction: column; /* يخليهم عموديين */
+  gap: 40px;              /* المسافة بين Team1 و Team2 */
+  align-items: center;    /* يوسطهم في الصفحة */
+  margin-top: 20px;
+}
+
+.total {
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 24px;   /* تكبير النص */
+  color: var(--accent); /* يخليه مميز */
+}
+
+    .controls button, .controls input { padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 8px; border: 1px solid #ccc; }
+    .history { margin-top: 10px; font-family: monospace; min-height: 24px; }
+    .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
+    .modal-content { background:white; padding:30px; border-radius:12px; text-align:center; animation: popIn 0.5s ease; }
+    .celebration { background: linear-gradient(135deg,#ff9a9e,#fad0c4); box-shadow: 0 0 20px rgba(0,0,0,0.4); }
+    .celebration h2 { font-size: 28px; }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal.hidden {
+  display: none !important;
+}
+/* Modal overlay */
+.modal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+/* محتوى المودال */
+.modal-content {
+  background: linear-gradient(180deg, var(--card), var(--bg-soft));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  width: 350px;
+  text-align: center;
+  animation: popIn 0.4s ease;
+}
+
+.modal-content .title {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+/* الحقول */
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: var(--muted);
+}
+
+.field input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+/* زر البداية */
+#startMatch {
+  background: var(--accent);
+  border: none;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.3s ease;
+}
+
+#startMatch:hover {
+  background: var(--accent-2);
+  transform: translateY(-2px);
+}
+
+/* Animation */
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+/* تحسين ستايل الخانة */
+.controls input {
+  width: 280px;
+  padding: 10px;
+  border: 1px solid var(--ring);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: var(--bg-soft);
+  color: var(--text);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.controls input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--ring);
+}
+.controls {
+  display: flex;
+  flex-direction: column;  /* نخلي العناصر عموديين */
+  gap: 10px;
+  align-items: center;     /* يوسّطهم */
+}
+
+.controls .quick-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;               /* مسافة بين +2 و -2 */
+}
+
+  </style>
+
+</body>
+
+</html>
